@@ -1,6 +1,8 @@
 const ConnectedDice = {};
 let RollStates = [];
 const DiceStates = {};
+let CurrentRoll = [];
+let SetAsideDice = [];
 
 let diceRolled = 0;
 let rollNum = 0;
@@ -24,26 +26,84 @@ const openConnectionDialog = () => {
   newDice.requestDevice();
 };
 
-const calculateRoll = () => {
-  // if (!RollStates[diceId].isCounted) {
-  //   if (RollStates[diceId].isRolling) {
-  //     rollTotal -= RollStates[diceId].value;
-  //     console.log(`Roll #: ${RollStates[diceId].rollCount}`);
-  //   } else {
-  //     rollTotal += RollStates[diceId].value;
-  //     RollStates[diceId].isCounted = true;
-  //   }
-  // }
-  for (const id in RollStates) {
-    if (RollStates[id].isRolling) {
-      if (RollStates[id].isRolling) {
-        rollTotal += RollStates[id].value;
-        RollStates[id].isRolling = false;
+const determineRoll = () => {
+  if (CurrentRoll.length != 0) {
+    console.log(`Roll Completed. ${CurrentRoll.length} Dice were rolled.`);
+    calculateRoll(CurrentRoll);
+    CurrentRoll = [];
+  }
+};
+
+const calculateRoll = async (roll) => {
+  let one = [];
+  let two = [];
+  let three = [];
+  let four = [];
+  let five = [];
+  let six = [];
+  let total = 0;
+
+  if (roll.length >= 3) {
+    roll.map(die => {
+      if (die[1] === 1) {
+        one.push(die)
+      } else if (die[1] === 2) {
+        two.push(die)
+      } else if (die[1] === 3) {
+        three.push(die)
+      } else if (die[1] === 4) {
+        four.push(die)
+      } else if (die[1] === 5) {
+        five.push(die)
+      } else {
+        six.push(die)
+      }
+    })
+    if (one.length >= 3) {
+      for(let i = 0; i < one.length - 2; i++) {
+        total += 1000
+      }
+    } else if (two.length >= 3) {
+      for(let i = 0; i < two.length - 2; i++) {
+        total += 200
+      }
+    } else if (three.length >= 3) {
+      for(let i = 0; i < three.length - 2; i++) {
+        total += 300
+      }
+    } else if (four.length >= 3) {
+      for(let i = 0; i < four.length - 2; i++) {
+        total += 400
+      }
+    } else if (five.length >= 3) {
+      for(let i = 0; i < five.length - 2; i++) {
+        total += 500
+      }
+    } else if (six.length >= 3) {
+      for(let i = 0; i < six.length - 2; i++) {
+        total += 600
       }
     }
+    if (five.length < 3 && one.length < 3){
+      roll.map(die => {
+        if (die[1] == 1) {
+          total += 100
+        } else if (die[1] == 5) {
+          total += 50
+        }
+      })
+    }
+  } else {
+    roll.map(die => {
+      if (die[1] == 1) {
+        total += 100
+      } else if (die[1] == 5) {
+        total += 50
+      }
+    })
   }
-
-  console.log(`Score: ${rollTotal}`);
+  SetAsideDice = roll
+  console.log(`This Roll's Total Is: ${total}`)
 };
 
 const turnOnLed = (diceId) => {
@@ -84,8 +144,6 @@ GoDice.prototype.onDiceConnected = (diceId, diceInstance) => {
 };
 
 GoDice.prototype.onRollStart = (diceId) => {
-  console.log(`${diceId} Is Rolling...`);
-
   DiceStates[diceId].rollCount += 1;
   DiceStates[diceId].value = 0;
   // RollStates = {};
@@ -96,7 +154,7 @@ GoDice.prototype.onRollStart = (diceId) => {
 };
 
 GoDice.prototype.onStable = (diceId, value) => {
-  console.log(`${diceId} Rolled A: ${value}`);
+  CurrentRoll.push([diceId, value]);
 
   // RollStates[diceId] = { value: value };
   DiceStates[diceId].value = value;
@@ -106,7 +164,7 @@ GoDice.prototype.onStable = (diceId, value) => {
 
   const diceValueEl = document.getElementById(diceId + "-die-value");
   diceValueEl.src = setDieImage(diceId, value);
-  console.log(rollTotal);
+  setTimeout(determineRoll, 2000)
 };
 
 GoDice.prototype.onDiceColor = (diceId, color) => {
