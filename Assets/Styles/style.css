@@ -1,0 +1,40 @@
+.first {
+  max-width: 100%;
+
+}
+
+div {
+  margin: 0;
+  padding: 0;
+}
+
+.main-menu {
+  margin:
+}
+
+.dice-name {
+  font-size: 10px;
+  font-weight: bold;
+  margin: 20px auto;
+}
+
+.dice-wrapper {
+  display: inline-block;
+  /* width: 143px;
+  height: 143px; */
+  /* border: 1px solid gray; */
+  border-radius: 5px;
+  margin-right: 5px;
+  text-align: center;
+  vertical-align: top;
+  background: url(../Images/shell.png) center center /cover no-repeat;
+}
+
+.dice-wrapper .btn {
+  width: 90% !important;
+  margin: 10px auto;
+}
+
+.dice-host {
+  width: 100%;
+}
