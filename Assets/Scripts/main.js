@@ -1,6 +1,10 @@
 const connectedDice = {};
 const diceStates = {};
+const connectedPlayers = {};
 
+let playerTurnNum = 0;
+let countedDice = [];
+let newRoll = false;
 let rollStates = [];
 let currentRoll = [];
 let setAsideDice = [];
@@ -23,14 +27,24 @@ const getDiceHtmlEl = (diceID) => {
 };
 
 const openConnectionDialog = () => {
-  const newDice = new GoDice();
-  newDice.requestDevice();
+  if (connectedPlayers[playerTurnNum] != null) {
+    const newDice = new GoDice();
+    newDice.requestDevice();
+  } else {
+    document.getElementById("connect-dice-button").innerText = "No Players";
+    setTimeout(function(){document.getElementById("connect-dice-button").innerText = "Connect GoDice"}, 1000);
+  }
 };
+
+const addNewPlayer = (name) => {
+  let tmpPlayer = {playerName:name, playerScore:0};
+  connectedPlayers[playerTurnNum] = tmpPlayer;
+}
 
 const determineRoll = () => {
   if (currentRoll.length + setAsideDice.length === 5) {
     console.log(`Roll Completed. ${currentRoll.length} Dice were rolled.`);
-    calculateRoll(currentRoll);
+    calculateRoll(currentRoll,true);
     currentRoll = [];
   }
 };
@@ -47,7 +61,7 @@ const determineSameRoll = (array) => {
   return sameRoll;
 };
 
-const calculateMultipleValue = (array) => {
+const calculateMultipleValue = (array, final) => {
   let total = 0;
   let sameRoll = determineSameRoll(array);
   console.log(sameRoll);
@@ -64,11 +78,13 @@ const calculateMultipleValue = (array) => {
         break;
     }
   });
-
+  if (final == true) {
+    array.forEach(function (die, index) {countedDice.push(die.id);});
+  }
   return total;
 };
 
-const calculateRoll = async (roll) => {
+const calculateRoll = async (roll, final) => {
   let one = [];
   let two = [];
   let three = [];
@@ -102,29 +118,35 @@ const calculateRoll = async (roll) => {
     });
 
     if (one.length >= 3) {
-      total = calculateMultipleValue(one);
+      total = calculateMultipleValue(one, final);
     } else if (two.length >= 3) {
-      total = calculateMultipleValue(two);
+      total = calculateMultipleValue(two, final);
     } else if (three.length >= 3) {
-      total = calculateMultipleValue(three);
+      total = calculateMultipleValue(three, final);
     } else if (four.length >= 3) {
-      total = calculateMultipleValue(four);
+      total = calculateMultipleValue(four, final);
     } else if (five.length >= 3) {
-      total = calculateMultipleValue(five);
+      total = calculateMultipleValue(five, final);
     } else if (six.length >= 3) {
-      total = calculateMultipleValue(six);
+      total = calculateMultipleValue(six, final);
     }
   }
 
   roll.map((die) => {
     if (die.value === 1 && one.length < 3) {
       total += 100;
+      if (final == true) {
+        countedDice.push(die.id);
+      }
     } else if (die.value === 5 && five.length < 3) {
       total += 50;
+      if (final == true) {
+        countedDice.push(die.id);
+      }
     }
   });
 
-  if (roll.length === 5 || roll.length === setAsideDice.length) {
+  if (roll.length === 5 && newRoll == false || roll.length === setAsideDice.length && newRoll == false) {
     totalScore = total;
     setAsideDice = roll;
   } else {
@@ -177,12 +199,30 @@ GoDice.prototype.onDiceConnected = (diceId, diceInstance) => {
 };
 
 GoDice.prototype.onRollStart = (diceId) => {
+  if (countedDice.length == 5) {
+    console.log("\n\n\n AND ROLLING \n\n\n");
+    newRoll = true;
+    countedDice = [];
+    rollStates = [];
+    currentRoll = [];
+    setAsideDice = [];
+    newRollDice = [];
+    diceRolled = 0;
+    rollNum = 0;
+  } else {
+    countedDice.forEach(function (id, index) {
+      if (id == diceId) {
+        console.log("\n\n\n REMOVED " + countedDice[index] + "(" + diceId + ")" + " AT " + index + "\n\n\n");
+        countedDice.pop(index);
+      }
+    });
+  }
   diceStates[diceId].rollCount += 1;
   newRollDice.push(diceStates[diceId]);
 
   setAsideDice = setAsideDice.filter((die) => die.id !== diceId);
-  if (newRollDice.length + setAsideDice.length === 5) {
-    calculateRoll(setAsideDice);
+  if (newRollDice.length + setAsideDice.length === 5 && newRoll == false) {
+    calculateRoll(setAsideDice, false);
   }
 
   const diceValueEl = document.getElementById(diceId + "-die-value");
