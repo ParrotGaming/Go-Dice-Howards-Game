@@ -75,7 +75,6 @@ const endPlayerTurn = () => {
 
 const determineRoll = () => {
   if (currentRoll.length + setAsideDice.length === 5) {
-    console.log(`Roll Completed. ${currentRoll.length} Dice were rolled.`);
     calculateRoll(currentRoll,true);
     currentRoll = [];
   }
@@ -96,7 +95,6 @@ const determineSameRoll = (array) => {
 const calculateMultipleValue = (array, final) => {
   let total = 0;
   let sameRoll = determineSameRoll(array);
-  console.log(sameRoll);
   sameRoll.map((die) => {
     let value = die.value === 1 ? 1000 : die.value * 100;
     switch (array.length) {
@@ -178,6 +176,9 @@ const calculateRoll = async (roll, final) => {
     }
   });
 
+  if (total == 0 && final && currentRoll.length != 0) {
+    endPlayerTurn();
+  }
   if (roll.length === 5 && newRoll == false || roll.length === setAsideDice.length && newRoll == false) {
     totalScore = total;
     setAsideDice = roll;
@@ -248,7 +249,7 @@ GoDice.prototype.onRollStart = (diceId) => {
   newRollDice.push(diceStates[diceId]);
 
   setAsideDice = setAsideDice.filter((die) => die.id !== diceId);
-  if (newRollDice.length + setAsideDice.length === 5 && newRoll == false) {
+  if (newRollDice.length + setAsideDice.length === 5 && newRoll == false && newRollDice.length > 1) {
     calculateRoll(setAsideDice, false);
   }
 
@@ -273,7 +274,6 @@ GoDice.prototype.onStable = (diceId, value) => {
 };
 
 GoDice.prototype.onFakeStable = (diceId, value) => {
-  console.log("onFakeStable");
   diceStates[diceId].value = value;
   currentRoll.push(diceStates[diceId]);
 
@@ -284,7 +284,6 @@ GoDice.prototype.onFakeStable = (diceId, value) => {
 };
 
 GoDice.prototype.onMoveStable = (diceId, value) => {
-  console.log("onMoveStable");
   diceStates[diceId].value = value;
   currentRoll.push(diceStates[diceId]);
 
@@ -295,7 +294,6 @@ GoDice.prototype.onMoveStable = (diceId, value) => {
 };
 
 GoDice.prototype.onDiceColor = (diceId, color) => {
-  console.log("DiceColor: ", diceId, color);
 
   diceStates[diceId].color = color;
 
