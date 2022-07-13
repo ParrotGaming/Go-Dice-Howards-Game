@@ -36,9 +36,41 @@ const openConnectionDialog = () => {
   }
 };
 
-const addNewPlayer = (name) => {
-  let tmpPlayer = {playerName:name, playerScore:0};
-  connectedPlayers[playerTurnNum] = tmpPlayer;
+const addNewPlayer = () => {
+  let name = document.getElementById("newPlayerName").value;
+  if (name != null && name != "") {
+    document.getElementById("newPlayerName").value = "";
+    let tmpPlayer = {playerName:name, playerScore:0};
+    connectedPlayers[playerTurnNum + Object.keys(connectedPlayers).length] = tmpPlayer;
+    var conDiv = document.createElement("div");
+    conDiv.innerText = name + ": " + 0;
+    conDiv.id = "player-" + (playerTurnNum + Object.keys(connectedPlayers).length-1);
+    document.getElementById("leaderboard").appendChild(conDiv);
+  }
+}
+
+const endPlayerTurn = () => {
+  if (connectedPlayers[playerTurnNum].playerScore + totalScore >= 500) {
+    connectedPlayers[playerTurnNum].playerScore += totalScore;
+    document.getElementById("player-" + playerTurnNum).innerText = connectedPlayers[playerTurnNum].playerName + ": " + connectedPlayers[playerTurnNum].playerScore;
+  }
+  //Reset Game State
+  if (playerTurnNum < Object.keys(connectedPlayers).length -1) {
+    playerTurnNum += 1;
+  } else {
+    playerTurnNum = 0;
+  }
+  countedDice = [];
+  newRoll = false;
+  rollStates = [];
+  currentRoll = [];
+  setAsideDice = [];
+  newRollDice = [];
+  diceRolled = 0;
+  rollNum = 0;
+  totalScore = 0;
+  const totalScoreEl = document.getElementById("score");
+  totalScoreEl.textContent = totalScore;
 }
 
 const determineRoll = () => {
@@ -153,9 +185,6 @@ const calculateRoll = async (roll, final) => {
     totalScore += total;
     setAsideDice = setAsideDice.concat(roll);
   }
-
-  console.log(`This Roll's Total Is: ${total}`);
-  console.log(`The total score is: ${totalScore}`);
   const totalScoreEl = document.getElementById("score");
   totalScoreEl.textContent = totalScore;
 };
@@ -200,7 +229,6 @@ GoDice.prototype.onDiceConnected = (diceId, diceInstance) => {
 
 GoDice.prototype.onRollStart = (diceId) => {
   if (countedDice.length == 5) {
-    console.log("\n\n\n AND ROLLING \n\n\n");
     newRoll = true;
     countedDice = [];
     rollStates = [];
@@ -212,7 +240,6 @@ GoDice.prototype.onRollStart = (diceId) => {
   } else {
     countedDice.forEach(function (id, index) {
       if (id == diceId) {
-        console.log("\n\n\n REMOVED " + countedDice[index] + "(" + diceId + ")" + " AT " + index + "\n\n\n");
         countedDice.pop(index);
       }
     });

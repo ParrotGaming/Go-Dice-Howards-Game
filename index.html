@@ -19,8 +19,13 @@
                 <a class="navbar-brand logo" href="#"></a>
                 <button onclick="openConnectionDialog()" type="button" class="btn btn-outline-primary" id="connect-dice-button">Connect
                     GoDice</button>
-                <button onclick="addNewPlayer('parrot')" type="button" class="btn btn-outline-primary">Add
-                    Player</button>
+                <span>
+                    <input id="newPlayerName" placeholder="Enter Name">
+                    <button onclick="addNewPlayer()" type="button" class="btn btn-outline-primary">Add
+                        Player</button>
+                </span>
+                <button onclick="endPlayerTurn()" type="button" class="btn btn-outline-primary">End
+                    Turn</button>
             </div>
         </nav>
         <h3 id="gocube-message"></h3>
@@ -28,6 +33,7 @@
         <div id="total-score">
             <p>Total Roll Score: <span id="score"></span></p>
         </div>
+        <div id="leaderboard"></div>
     </div>
 </body>
 </html>
