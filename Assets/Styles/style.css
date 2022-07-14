@@ -3,6 +3,11 @@
 
 }
 
+#nav {
+  display: flex;
+  justify-content: space-between;
+}
+
 div {
   margin: 0;
   padding: 0;
@@ -20,9 +25,6 @@ div {
 
 .dice-wrapper {
   display: inline-block;
-  /* width: 143px;
-  height: 143px; */
-  /* border: 1px solid gray; */
   border-radius: 5px;
   margin-right: 5px;
   text-align: center;
@@ -35,6 +37,20 @@ div {
   margin: 10px auto;
 }
 
-.dice-host {
+#dice-host {
   width: 100%;
+  height: 243px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+#total-score, #score, #leaderboard {
+  font-family: 'Edu QLD Beginner', cursive;
+  font-size: 50px;
+}
+
+.player-name {
+  border-bottom: 1px solid #848484;
+  width: 300px;
 }

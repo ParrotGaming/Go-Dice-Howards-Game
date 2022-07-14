@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
         integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+    <link href="https://fonts.googleapis.com/css2?family=Edu+QLD+Beginner&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="./Assets/Styles/style.css" type="text/css" media="all">
 
     <script src="./Assets/Scripts/godice.js"></script>
@@ -15,15 +16,16 @@
 <body>
     <div class="container">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <div class="container-fluid">
-                <a class="navbar-brand logo" href="#"></a>
+            <div class="container-fluid" id="nav">
                 <button onclick="openConnectionDialog()" type="button" class="btn btn-outline-primary" id="connect-dice-button">Connect
                     GoDice</button>
-                <span>
-                    <input id="newPlayerName" placeholder="Enter Name">
+                <form class="row row-cols-lg-auto g-3 align-items-center">
+                    <div>
+                        <input class="form-control" id="newPlayerName" placeholder="Enter Name">
+                    </div>
                     <button onclick="addNewPlayer()" type="button" class="btn btn-outline-primary">Add
                         Player</button>
-                </span>
+                </form>
                 <button onclick="endPlayerTurn()" type="button" class="btn btn-outline-primary">End
                     Turn</button>
             </div>
@@ -31,7 +33,7 @@
         <h3 id="gocube-message"></h3>
         <div id="dice-host"></div>
         <div id="total-score">
-            <p>Total Roll Score: <span id="score"></span></p>
+            <p id="score"></p>
         </div>
         <div id="leaderboard"></div>
     </div>

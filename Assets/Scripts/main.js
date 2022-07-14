@@ -32,7 +32,10 @@ const openConnectionDialog = () => {
     newDice.requestDevice();
   } else {
     document.getElementById("connect-dice-button").innerText = "No Players";
-    setTimeout(function(){document.getElementById("connect-dice-button").innerText = "Connect GoDice"}, 1000);
+    setTimeout(function () {
+      document.getElementById("connect-dice-button").innerText =
+        "Connect GoDice";
+    }, 1000);
   }
 };
 
@@ -40,22 +43,29 @@ const addNewPlayer = () => {
   let name = document.getElementById("newPlayerName").value;
   if (name != null && name != "") {
     document.getElementById("newPlayerName").value = "";
-    let tmpPlayer = {playerName:name, playerScore:0};
-    connectedPlayers[playerTurnNum + Object.keys(connectedPlayers).length] = tmpPlayer;
+    let tmpPlayer = { playerName: name, playerScore: 0 };
+    connectedPlayers[
+      playerTurnNum + Object.keys(connectedPlayers).length
+    ] = tmpPlayer;
     var conDiv = document.createElement("div");
+    conDiv.classList.add("player-name", "col-12");
     conDiv.innerText = name + ": " + 0;
-    conDiv.id = "player-" + (playerTurnNum + Object.keys(connectedPlayers).length-1);
+    conDiv.id =
+      "player-" + (playerTurnNum + Object.keys(connectedPlayers).length - 1);
     document.getElementById("leaderboard").appendChild(conDiv);
   }
-}
+};
 
 const endPlayerTurn = () => {
   if (connectedPlayers[playerTurnNum].playerScore + totalScore >= 500) {
     connectedPlayers[playerTurnNum].playerScore += totalScore;
-    document.getElementById("player-" + playerTurnNum).innerText = connectedPlayers[playerTurnNum].playerName + ": " + connectedPlayers[playerTurnNum].playerScore;
+    document.getElementById("player-" + playerTurnNum).innerText =
+      connectedPlayers[playerTurnNum].playerName +
+      ": " +
+      connectedPlayers[playerTurnNum].playerScore;
   }
   //Reset Game State
-  if (playerTurnNum < Object.keys(connectedPlayers).length -1) {
+  if (playerTurnNum < Object.keys(connectedPlayers).length - 1) {
     playerTurnNum += 1;
   } else {
     playerTurnNum = 0;
@@ -70,12 +80,12 @@ const endPlayerTurn = () => {
   rollNum = 0;
   totalScore = 0;
   const totalScoreEl = document.getElementById("score");
-  totalScoreEl.textContent = totalScore;
-}
+  totalScoreEl.textContent = `${connectedPlayers[playerTurnNum].playerName}'s Total Roll Score: ${totalScore}`;
+};
 
 const determineRoll = () => {
   if (currentRoll.length + setAsideDice.length === 5) {
-    calculateRoll(currentRoll,true);
+    calculateRoll(currentRoll, true);
     currentRoll = [];
   }
 };
@@ -109,7 +119,9 @@ const calculateMultipleValue = (array, final) => {
     }
   });
   if (final == true) {
-    array.forEach(function (die, index) {countedDice.push(die.id);});
+    array.forEach(function (die, index) {
+      countedDice.push(die.id);
+    });
   }
   return total;
 };
@@ -177,9 +189,13 @@ const calculateRoll = async (roll, final) => {
   });
 
   if (total == 0 && final && currentRoll.length != 0) {
+    totalScore = 0;
     endPlayerTurn();
   }
-  if (roll.length === 5 && newRoll == false || roll.length === setAsideDice.length && newRoll == false) {
+  if (
+    (roll.length === 5 && newRoll == false) ||
+    (roll.length === setAsideDice.length && newRoll == false)
+  ) {
     totalScore = total;
     setAsideDice = roll;
   } else {
@@ -187,7 +203,7 @@ const calculateRoll = async (roll, final) => {
     setAsideDice = setAsideDice.concat(roll);
   }
   const totalScoreEl = document.getElementById("score");
-  totalScoreEl.textContent = totalScore;
+  totalScoreEl.textContent = `${connectedPlayers[playerTurnNum].playerName}'s Total Roll Score: ${totalScore}`;
 };
 
 const turnOnLed = () => {
@@ -249,7 +265,11 @@ GoDice.prototype.onRollStart = (diceId) => {
   newRollDice.push(diceStates[diceId]);
 
   setAsideDice = setAsideDice.filter((die) => die.id !== diceId);
-  if (newRollDice.length + setAsideDice.length === 5 && newRoll == false && newRollDice.length > 1) {
+  if (
+    newRollDice.length + setAsideDice.length === 5 &&
+    newRoll == false &&
+    newRollDice.length > 1
+  ) {
     calculateRoll(setAsideDice, false);
   }
 
@@ -294,7 +314,6 @@ GoDice.prototype.onMoveStable = (diceId, value) => {
 };
 
 GoDice.prototype.onDiceColor = (diceId, color) => {
-
   diceStates[diceId].color = color;
 
   const diceValueEl = document.getElementById(diceId + "-die-value");
